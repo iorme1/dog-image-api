@@ -1,0 +1,50 @@
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #001f3f;
+  font-family: Verdana;
+}
+
+.dog-image {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border: 1px solid black;
+  box-shadow: 1px 1px 2px 3px black;
+}
+
+.error-msg {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  font-size: 20px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .dog-image {
+    width: 220px;
+    height: 220px;
+  }
+
+  .btn {
+    font-size: 90%;
+    padding: 3px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .dog-image {
+    width: 160px;
+    height: 160px;
+    box-shadow: 0.5px 0.5px 1px 2px black;
+  }
+
+  .btn {
+    font-size: 80%;
+    padding: 5px;
+  }
+}

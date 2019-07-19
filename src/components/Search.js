@@ -20,7 +20,7 @@ class Search extends Component {
   }
 
   search(event) {
-    let sub_breed = event.target.value;
+    let sub_breed = event.target.value.toLowerCase();
     let { master_breed } = this.state;
     const url = `https://dog.ceo/api/breed/${master_breed}/${sub_breed}/images`;
 
@@ -30,8 +30,8 @@ class Search extends Component {
         let image_urls = data.message;
 
         if (Array.isArray(image_urls)) {
-          this.setDogImages(image_urls)
-          this.setState({ error: null })
+          this.setDogImages(image_urls);
+          this.setState({ error: null });
         } else {
           this.setState({ error: data.message, dog_images: [] });
         }
@@ -49,12 +49,12 @@ class Search extends Component {
 
     let { master_breed } = this.state;
 
-    this.setSubBreedButtons(master_breed)
+    this.setSubBreedButtons(master_breed);
   }
 
   setSubBreedButtons(master_breed) {
     if (!master_breed) {
-      this.setState({ error: "No search input received!" })
+      this.setState({ error: "No search input received!" });
       return;
     }
     const url = `https://dog.ceo/api/breed/${master_breed}/list`;
@@ -68,7 +68,7 @@ class Search extends Component {
            this.setState({ sub_breed_results: subBreeds });
            this.setState({ error: null });
          } else {
-           this.setState({ error: data.message })
+           this.setState({ error: data.message });
          }
       })
       .catch(error => this.setState({ error }) );
