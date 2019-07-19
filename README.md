@@ -11,6 +11,16 @@ of the following:
 
 ## Installation
 
+1. Fork / Clone Repository  
+2. cd into root directory  
+3. npm install  
+4. npm start  
+
+## Tech
+
+1. React  
+2. Bootstrap  
+3. ReactStrap 
 
 ## Using the App
 Simply query for breeds to get all related sub breeds (if any). The breed
