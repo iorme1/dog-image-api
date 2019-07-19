@@ -4,6 +4,8 @@ import {
   Input,
   Form,
 } from 'reactstrap';
+import BreedButton from './BreedButton';
+import DogImage from './DogImage';
 
 class Search extends Component {
   state = {
@@ -15,6 +17,26 @@ class Search extends Component {
     ],
     dog_images: [],
     error: null
+  }
+
+  search(event) {
+    let sub_breed = event.target.value;
+    let { master_breed } = this.state;
+    const url = `https://dog.ceo/api/breed/${master_breed}/${sub_breed}/images`;
+
+    fetch(url, {cache: "force-cache"})
+      .then(res => res.json())
+      .then(data => {
+        let image_urls = data.message;
+
+        if (Array.isArray(image_urls)) {
+          this.setDogImages(image_urls)
+          this.setState({ error: null })
+        } else {
+          this.setState({ error: data.message, dog_images: [] });
+        }
+      })
+      .catch(error => this.setState({ error }))
   }
 
   handleChange(event) {
@@ -31,6 +53,10 @@ class Search extends Component {
   }
 
   setSubBreedButtons(master_breed) {
+    if (!master_breed) {
+      this.setState({ error: "No search input received!" })
+      return;
+    }
     const url = `https://dog.ceo/api/breed/${master_breed}/list`;
 
     fetch(url, {cache: "force-cache"})
@@ -53,6 +79,7 @@ class Search extends Component {
   }
 
   render() {
+    let { sub_breed_results, error, dog_images } = this.state;
 
     return (
       <Container className="mt-3">
@@ -72,6 +99,36 @@ class Search extends Component {
               />
             </Form>
           </div>
+        </div>
+
+        <div className="row mt-5">
+          {sub_breed_results.map(val => {
+            return (
+              <BreedButton
+                query={val}
+                key={val}
+                handleClick={this.search.bind(this)}
+              />
+            );
+          })}
+        </div>
+
+        <div className="row mt-3 mb-5 text-center">
+          {error ?
+            <div className="col-12">
+              <p className="error-msg">{error}</p>
+            </div>
+            : null
+          }
+
+          {dog_images.map(image => {
+            return (
+              <DogImage
+                key={image}
+                dog_image={image}
+              />
+            );
+          })}
         </div>
       </Container>
     )
