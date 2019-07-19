@@ -9,20 +9,36 @@ import DogImage from './DogImage';
 
 class Search extends Component {
   state = {
-    master_breed: "terrier",
-    sub_breed_results: [
+    breed: "terrier",
+    breed_results: [
       "american", "australian", "bedlington", "border",
       "dandie",   "fox",        "irish",      "norwich",
       "yorkshire","toy",        "tibetan",    "russel"
     ],
     dog_images: [],
-    error: null
+    error: null,
+    breed_list: []
+  }
+
+  componentDidMount() {
+    const url = "https://dog.ceo/api/breeds/list/all";
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        let breed_list = data.message;
+        this.setState({ breed_list });
+      });
   }
 
   search(event) {
     let sub_breed = event.target.value.toLowerCase();
-    let { master_breed } = this.state;
-    const url = `https://dog.ceo/api/breed/${master_breed}/${sub_breed}/images`;
+    let { breed, breed_results } = this.state;
+    let breedURL = breed_results.length > 1 ?
+      `${breed}/${sub_breed}` :
+      `${breed}`;
+
+    const url = `https://dog.ceo/api/breed/${breedURL}/images`;
 
     fetch(url, {cache: "force-cache"})
       .then(res => res.json())
@@ -40,38 +56,32 @@ class Search extends Component {
   }
 
   handleChange(event) {
-    let master_breed = event.target.value.toLowerCase()
-    this.setState({ master_breed, sub_breed_results: [], dog_images: [] })
+    let breed = event.target.value.toLowerCase()
+    this.setState({ breed, breed_results: [], dog_images: [] })
   }
 
   handleSubmit(event) {
     event.preventDefault();
 
-    let { master_breed } = this.state;
+    let { breed } = this.state;
 
-    this.setSubBreedButtons(master_breed);
+    this.setBreedButtons(breed);
   }
 
-  setSubBreedButtons(master_breed) {
-    if (!master_breed) {
-      this.setState({ error: "No search input received!" });
+  setBreedButtons(breed) {
+    let { breed_list } = this.state;
+
+    if (breed_list[breed] !== undefined) {
+      this.setState({ error: null}); // reset error if currently displayed
+      if (breed_list[breed].length === 0) {
+        this.setState({ breed_results: [this.state.breed] })
+      } else {
+        this.setState({ breed_results: breed_list[breed] })
+      }
+    } else {
+      this.setState({ error: "Please enter a valid breed name."});
       return;
     }
-    const url = `https://dog.ceo/api/breed/${master_breed}/list`;
-
-    fetch(url, {cache: "force-cache"})
-      .then(response => response.json())
-      .then(data => {
-         let subBreeds = data.message;
-
-         if (Array.isArray(subBreeds)) {
-           this.setState({ sub_breed_results: subBreeds });
-           this.setState({ error: null });
-         } else {
-           this.setState({ error: data.message });
-         }
-      })
-      .catch(error => this.setState({ error }) );
   }
 
   setDogImages(images) {
@@ -79,7 +89,7 @@ class Search extends Component {
   }
 
   render() {
-    let { sub_breed_results, error, dog_images } = this.state;
+    let { breed_results, error, dog_images } = this.state;
 
     return (
       <Container className="mt-3">
@@ -90,7 +100,7 @@ class Search extends Component {
                 type="text"
                 value={this.state.value}
                 onChange={this.handleChange.bind(this)}
-                placeholder="Search by master breed..."
+                placeholder="Enter master breed name..."
               />
               <Input
                 type="submit"
@@ -102,7 +112,7 @@ class Search extends Component {
         </div>
 
         <div className="row mt-5">
-          {sub_breed_results.map(val => {
+          {breed_results.map(val => {
             return (
               <BreedButton
                 query={val}
